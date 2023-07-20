@@ -1,9 +1,19 @@
 #Kafka with zookeper
 
-1.to start zookeper.properties
+STEP 1: START THE KAFKA ENVIRONMENT
+# Start the ZooKeeper service
+.\bin\windows\zookeeper-server-start.bat .\config\zookeeper.properties
 
-to start zookeper if absolute path needed zookeeper-server-start.bat D:\kafka\kafka_2.13-3.5.0\config\zookeeper.properties
+# Start the Kafka broker service
+.\bin\windows\kafka-server-start.bat .\config\server.properties
 
-2.to start server.properties
+STEP 2: CREATE A TOPIC TO STORE YOUR EVENTS
+.\bin\windows\kafka-topics.bat --create --topic topic_demo --bootstrap-server localhost:9092
 
-kafka-server-start.bat D:\kafka\kafka_2.13-3.5.0\config\server.properties
+STEP 3: WRITE SOME EVENTS INTO THE TOPIC
+.\bin\windows\kafka-console-producer.bat --topic topic_demo --bootstrap-server localhost:9092
+
+STEP 4:  READ THE EVENTS
+.\bin\windows\kafka-console-consumer.bat --topic topic_demo --from-beginning --bootstrap-server localhost:9092
+hello world
+topic demo
