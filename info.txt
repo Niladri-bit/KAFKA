@@ -1,4 +1,4 @@
-Kafka with zookeper
+#Kafka with zookeper
 
 1.to start zookeper.properties
 
