@@ -1,0 +1,80 @@
+1.application properties
+
+spring.kafka.consumer.bootstrap-servers: localhost:9092
+spring.kafka.consumer.group-id: myGroup
+spring.kafka.consumer.auto-offset-reset: earliest
+spring.kafka.consumer.key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+spring.kafka.consumer.value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+spring.kafka.producer.bootstrap-servers: localhost:9092
+spring.kafka.producer.key-serializer: org.apache.kafka.common.serialization.StringSerializer
+spring.kafka.producer.value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+2.KAFKA TOPIC CONFIG
+
+package com.kafka.Springbootkafkatutorial.config;
+
+@Configuration
+public class KafkaTopicConfig {
+
+    @Bean
+    public NewTopic javaguidesTopic(){
+        return TopicBuilder.name("javaguides")
+                .build();
+    }
+}
+
+3.KAFKA PRODUCER JAVA
+
+package com.kafka.Springbootkafkatutorial.kafka;
+@Service
+public class kafkaProducer {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(KafkaProducer.class);
+	private KafkaTemplate<String, String> kafkaTemplate;
+
+	public kafkaProducer(KafkaTemplate<String, String> kafkaTemplate) {
+		this.kafkaTemplate = kafkaTemplate;
+	}
+	public void sendMessage(String message) {
+		LOGGER.info(String.format("Message sent %s", message));
+		kafkaTemplate.send("javaguides",message);
+	}
+}
+
+4.MESSAGE CONTROLLER
+
+package com.kafka.Springbootkafkatutorial.controller;
+
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.kafka.Springbootkafkatutorial.kafka.kafkaProducer;
+
+@RestController
+@RequestMapping("/api/v1/kafka")
+public class messageController {
+	
+	private kafkaProducer kafkaProducer;
+	
+	public messageController(kafkaProducer kafkaProducer) {
+		this.kafkaProducer = kafkaProducer;
+	}
+	
+	@GetMapping("/publish")
+	public ResponseEntity<String> publish(@RequestParam("message") String message){
+		kafkaProducer.sendMessage(message);
+		return ResponseEntity.ok("message sent to the topic");
+	}
+	
+}
+
+
+RUN THE BROKER 
+AFTER USE THE URL http://localhost:8080/api/v1/kafka/publish?message=bye
+TO CHECK IF WORKING >.\bin\windows\kafka-console-consumer.bat --topic javaguides --from-beginning --bootstrap-server localhost:9092
+IT WILL GIVE BYE
